@@ -1,26 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { Task } from "./interfaces/Task";
+import logo from "./logo.svg";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// Components
+import { TaskForm } from "./components/TaskForm";
+import { TaskList } from "./components/TaskList";
+
+interface Props {
+  title?: string;
 }
 
-export default App;
+export const App = ({ title = "SHOP REACT" }: Props): JSX.Element => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const getCurrentTimestamp = (): number => new Date().getTime();
+
+  const addANewTask = (task: Task): void =>
+    setTasks([
+      ...tasks,
+      { ...task, completed: false, id: getCurrentTimestamp() },
+    ]);
+
+  const deleteATask = (id: number): void =>
+    setTasks(tasks.filter((task) => task.id !== id));
+
+  return (
+    <div className="" style={{ height: "100vh" }}>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div className="container">
+          <a className="navbar-brand" href="/">
+            <img src={logo} alt="React Logo" style={{ width: "4rem" }} />
+            {title}
+          </a>
+        </div>
+      </nav>
+
+      <main className="container p-4">
+        <div className="row">
+          <div className="col-md-4">
+            <TaskForm addANewTask={addANewTask} />
+          </div>
+          <div className="col-md-8">
+            <div className="row">
+              <h6 className="text-dark d-flex justify-content-end">
+                Total Articulos <span className="badge bg-primary ms-2">{tasks.length}</span>
+              </h6>
+
+              <TaskList tasks={tasks} deleteATask={deleteATask} />
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
